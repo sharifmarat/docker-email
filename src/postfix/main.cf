@@ -1,28 +1,24 @@
-myhostname = mail-dummy-hostname
-myorigin = mail-dummy-hostname
-smtpd_banner = $myhostname ESMTP $mail_name
+myhostname = example.com
+myorigin = example.com
+smtpd_banner = ESMTP hi hi
 biff = no
 compatibility_level=2
 append_dot_mydomain = no
 readme_directory = no
+recipient_delimiter = -
 
-# TODO
-#smtpd_tls_cert_file=fullchain.pem
-#smtpd_tls_key_file=privkey.pem
-#smtpd_use_tls=yes
-#smtpd_tls_auth_only = yes
-#smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
-#smtpd_tls_security_level = may
-#smtp_tls_security_level = may
-#smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
-#smtp_tls_CApath = /etc/ssl/certs
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
 
-smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
-smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_tls_cert_file=/etc/ssl/private/fullchain.pem
+smtpd_tls_key_file=/etc/ssl/private/privkey.pem
 smtpd_use_tls=yes
+smtpd_tls_auth_only = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtpd_tls_security_level = may
+smtp_tls_security_level = may
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
-
+smtp_tls_CApath = /etc/ssl/certs
 
 smtpd_delay_reject = yes
 smtpd_helo_required = yes
@@ -54,21 +50,25 @@ smtpd_recipient_restrictions =
     #reject_rhsbl_client dbl.spamhaus.org
     permit
 
-mydestination = localhost
+mydestination =
 relayhost =
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 
 message_size_limit = 20480000
 mailbox_size_limit = 5120000000
 
+#virtual_mailbox_maps = hash:/etc/postfix/virtual
+#virtual_alias_domains = /etc/postfix/virtual_domains
+
 virtual_mailbox_limit = 5120000000
 virtual_mailbox_base = /mail
 virtual_mailbox_domains = /etc/postfix/virtual_domains
-virtual_mailbox_maps = hash:/etc/postfix/virtual
+virtual_mailbox_maps = hash:/etc/postfix/virtual_boxes
+virtual_alias_maps = hash:/etc/postfix/virtual_aliases
 virtual_minimum_uid = 9000
-virtual_transport = virtual
+virtual_transport = dovecot
 virtual_uid_maps = static:9000
 virtual_gid_maps = static:9000
 
-local_transport = virtual
-local_recipient_maps = $virtual_mailbox_maps
+local_transport = dovecot
+local_recipient_maps = $virtual_alias_maps
