@@ -41,3 +41,8 @@ location /my-mail/ {
         proxy_set_header X-Forwarded-For $remote_addr;
 }
 ```
+
+# TODO:
+* Bind virtual users and aliases
+* Manage users/passwords with scripts
+* Spamassassin
