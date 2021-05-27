@@ -11,14 +11,37 @@ docker build --rm -t postfix-dovecot --build-arg MAILNAME=example.com .
 ```
 
 # Running
-Certificates are optional. To use automatically generated remove `-v parameters`.
+Start with self-signed certificates:
 ```
 docker run -d \
     -p 25:25 \
     -p 143:143 \
     -p 587:587 \
-    -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/private/fullchain.pem \
-    -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/privkey.pem \
+    postfix-dovecot
+```
+
+Start with your existing certificates:
+```
+docker run -d \
+    -p 25:25 \
+    -p 143:143 \
+    -p 587:587 \
+    -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/private/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/privkey.pem:ro \
+    postfix-dovecot
+```
+
+Start with mounted folder for mail storage:
+```
+mkdir /my-mail
+chown 9000:9000 /my-mail  # It is kind of hack. 9000 is vmail uid&gid in docker. Is there a better way?
+docker run -d \
+    -p 25:25 \
+    -p 143:143 \
+    -p 587:587 \
+    -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/private/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/privkey.pem:ro \
+    -v /my-mail:/mail \
     postfix-dovecot
 ```
 
@@ -40,6 +63,19 @@ location /my-mail/ {
         proxy_set_header Host            $host;
         proxy_set_header X-Forwarded-For $remote_addr;
 }
+```
+
+# Restarting a service or reloading config
+```
+docker exec $(docker ps -q --filter ancestor=postfix-dovecot) sv restart dovecot
+docker exec $(docker ps -q --filter ancestor=postfix-dovecot) sv restart postfix
+docker exec $(docker ps -q --filter ancestor=postfix-dovecot) postfix reload
+```
+
+# Stopping the container
+```
+docker stop $(docker ps -q --filter ancestor=postfix-dovecot)
+docker rmi $(docker ps -a -q --filter ancestor=postfix-dovecot)
 ```
 
 # TODO:
