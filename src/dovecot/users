@@ -1,1 +1,1 @@
-test@example.com:{SHA512-CRYPT}$6$BQKXtzgwprynQtxl$hOagGf2.stMINk4/J4ECN1Y/55lz8cOLRhTkPW7.rpRfjyLM3X4yphbl5PUsxwtSS6P4PIiSrwMfylCX9DVf/0:9000:9000::/mail/test::
+test@example.com:{SHA512-CRYPT}$6$p.2OtX3JcA3mVq19$EV/IDtm4BJhHIrJCwWJvQnRxEEM97ACl1sr15wnBF8TY53CTcJKEzqwZbI4ujRWcfpDiiy.QNnqH.cJQY3uVY.:9000:9000::/mail/test::userdb_mail_crypt_private_password=%w
