@@ -74,7 +74,7 @@ COPY src/postfix/master.cf /etc/postfix/
 COPY src/postfix/virtual_domains /etc/postfix/
 COPY src/postfix/virtual_aliases /etc/postfix/
 COPY src/postfix/virtual_boxes /etc/postfix/
-COPY src/dovecot/local.conf /etc/dovecot/
+COPY src/dovecot/dovecot.conf /etc/dovecot/
 COPY src/dovecot/users /etc/dovecot/
 
 # Apply arguments
