@@ -45,6 +45,23 @@ docker run -d \
     postfix-dovecot
 ```
 
+Start with mounted virtual user configuration and dovecot auth:
+```
+docker run -d \
+    -p 25:25 \
+    -p 143:143 \
+    -p 587:587 \
+    -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/private/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/privkey.pem:ro \
+    -v /my-mail:/mail \
+    -v /my-users:/etc/dovecot/users \
+    -v /my-virtual_domains:/etc/postfix/virtual_domains \
+    -v /my-virtual_accounts:/etc/postfix/virtual_boxes \
+    -v /my-virtual_aliases:/etc/postfix/virtual_aliases \
+    postfix-dovecot
+```
+See on how to adjust configuration with scripts below.
+
 # Adding roundcube on top of that
 You can add roundcube:
 ```
@@ -78,8 +95,11 @@ docker stop $(docker ps -q --filter ancestor=postfix-dovecot)
 docker rmi $(docker ps -a -q --filter ancestor=postfix-dovecot)
 ```
 
+# Adding/Removing users
+
+# Details on implementation
+
 # TODO:
-* Bind virtual users and aliases
 * Manage users/passwords with scripts
 * Spamassassin
 * DKIM

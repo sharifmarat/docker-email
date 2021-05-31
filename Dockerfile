@@ -1,17 +1,19 @@
 FROM debian-buster-base
 
-ARG MAILNAME=example.com
-
 EXPOSE 25 143 587
 
-ENV DEBIAN_FRONTEND=noninteractive \
+ARG MAILNAME=example.com
+
+ENV HOSTNAME=$MAILNAME \
+    DEBIAN_FRONTEND=noninteractive \
     SERVICE_AVAILABLE_DIR=/etc/service \
     SERVICE_ENABLED_DIR=/service \
     CERT_LOCATION=/etc/ssl/private/fullchain.pem \
     CERT_KEY_LOCATION=/etc/ssl/private/privkey.pem
 
 # Basics
-RUN echo $MAILNAME >/etc/mailname \
+RUN echo $HOSTNAME >/etc/mailname \
+  && echo $HOSTNAME >/etc/hostname \
 # Refresh the system
   && apt-get update \
   && apt-get upgrade -y \
@@ -69,19 +71,18 @@ RUN echo $MAILNAME >/etc/mailname \
   && cp /etc/ssl/private/ssl-cert-snakeoil.key $CERT_KEY_LOCATION
 
 # Copy configs - some will be changed later
-COPY src/postfix/main.cf /etc/postfix/
-COPY src/postfix/master.cf /etc/postfix/
-COPY src/postfix/virtual_domains /etc/postfix/
-COPY src/postfix/virtual_aliases /etc/postfix/
-COPY src/postfix/virtual_boxes /etc/postfix/
-COPY src/dovecot/dovecot.conf /etc/dovecot/
-COPY src/dovecot/users /etc/dovecot/
+COPY src/postfix/main.cf \
+     src/postfix/master.cf \
+     src/postfix/virtual_domains \
+     src/postfix/virtual_aliases \
+     src/postfix/virtual_boxes \
+       /etc/postfix/
+COPY src/dovecot/dovecot.conf \
+     src/dovecot/users \
+       /etc/dovecot/
 
-# Apply arguments
-
-# Build hashes
-RUN postmap /etc/postfix/virtual_aliases \
- && postmap /etc/postfix/virtual_boxes
+# Update configs based on arguments
+RUN sed -i "s/example.com/$HOSTNAME/g" /etc/postfix/main.cf
 
 # Start
 CMD ["/bin/runsvdir", "/service"]
