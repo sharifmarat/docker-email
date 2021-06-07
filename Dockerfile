@@ -34,7 +34,7 @@ RUN echo $HOSTNAME >/etc/mailname \
 # Install opendkim
       opendkim opendkim-tools \
 # Spamassasin
-      spamassassin \
+      spamassassin spamc \
 # Ngingx
 # Roundcube
 # Create services
@@ -80,6 +80,10 @@ COPY src/postfix/main.cf \
 COPY src/dovecot/dovecot.conf \
      src/dovecot/users \
        /etc/dovecot/
+COPY src/spamassassin/spamassassin \
+       /etc/default/
+COPY src/spamassassin/local.cf \
+       /etc/spamassassin/
 
 # Update configs based on arguments
 RUN sed -i "s/example.com/$HOSTNAME/g" /etc/postfix/main.cf

@@ -99,7 +99,8 @@ docker rmi $(docker ps -a -q --filter ancestor=postfix-dovecot)
 
 # Details on implementation
 
+## Spamassassin
+
 # TODO:
 * Manage users/passwords with scripts
-* Spamassassin
 * DKIM

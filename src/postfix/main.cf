@@ -1,6 +1,6 @@
 myhostname = example.com
 myorigin = example.com
-smtpd_banner = ESMTP hi hi
+smtpd_banner = What do you have for $mail_name?
 biff = no
 compatibility_level=2
 append_dot_mydomain = no
@@ -69,3 +69,8 @@ virtual_gid_maps = static:9000
 
 local_transport = dovecot
 local_recipient_maps = $virtual_alias_maps
+
+smtpd_client_connection_count_limit = 15
+smtpd_client_connection_rate_limit = 60
+
+notify_classes = bounce, data, delay, resource, software
