@@ -1,10 +1,14 @@
-FROM debian-buster-base
+FROM debian:buster
 
 EXPOSE 25 143 587
 
-ARG MAILNAME=example.com
+# TODO
+# Setting TRUSTED_NETWORKS="127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 172.17.0.0/16" exposes relay access since docker remote IP address might be broken
 
-ENV HOSTNAME=$MAILNAME \
+ENV MAILNAME=mydummymailname.com \
+    HOSTNAME=mailserver \
+    TRUSTED_NETWORKS="127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128" \
+    REPLACE_VARS='$MAILNAME,$HOSTNAME,$TRUSTED_NETWORKS' \
     DEBIAN_FRONTEND=noninteractive \
     SERVICE_AVAILABLE_DIR=/etc/service \
     SERVICE_ENABLED_DIR=/service \
@@ -12,7 +16,7 @@ ENV HOSTNAME=$MAILNAME \
     CERT_KEY_LOCATION=/etc/ssl/private/privkey.pem
 
 # Basics
-RUN echo $HOSTNAME >/etc/mailname \
+RUN echo $MAILNAME >/etc/mailname \
   && echo $HOSTNAME >/etc/hostname \
 # Refresh the system
   && apt-get update \
@@ -22,11 +26,10 @@ RUN echo $HOSTNAME >/etc/mailname \
 # Prepare user and group
   && groupadd -g 9000 vmail \
   && useradd -u 9000 -g vmail -s /usr/bin/nologin -d /mail -m vmail \
-# TODO: certificates
 # Install things
   && apt-get install -y --no-install-recommends --no-install-suggests \
-# Install runit
-      runit \
+# Install runit and basic tools
+      runit cron rsyslog procps gettext-base \
 # Install postfix
       postfix \
 # Install dovecot
@@ -35,8 +38,6 @@ RUN echo $HOSTNAME >/etc/mailname \
       opendkim opendkim-tools \
 # Spamassasin
       spamassassin spamc \
-# Ngingx
-# Roundcube
 # Create services
   && mkdir -p $SERVICE_AVAILABLE_DIR \
   && mkdir -p $SERVICE_ENABLED_DIR \
@@ -84,9 +85,7 @@ COPY src/spamassassin/spamassassin \
        /etc/default/
 COPY src/spamassassin/local.cf \
        /etc/spamassassin/
-
-# Update configs based on arguments
-RUN sed -i "s/example.com/$HOSTNAME/g" /etc/postfix/main.cf
+COPY src/entry.sh /entry.sh
 
 # Start
-CMD ["/bin/runsvdir", "/service"]
+CMD ["/entry.sh"]

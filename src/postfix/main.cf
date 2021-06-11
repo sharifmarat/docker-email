@@ -1,5 +1,5 @@
-myhostname = example.com
-myorigin = example.com
+myhostname = $MAILNAME
+myorigin = $MAILNAME
 smtpd_banner = What do you have for $mail_name?
 biff = no
 compatibility_level=2
@@ -50,9 +50,9 @@ smtpd_recipient_restrictions =
     #reject_rhsbl_client dbl.spamhaus.org
     permit
 
-mydestination =
+mydestination = localhost
 relayhost =
-mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mynetworks = $TRUSTED_NETWORKS
 
 message_size_limit = 20480000
 mailbox_size_limit = 5120000000
