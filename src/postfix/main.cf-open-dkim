@@ -1,0 +1,5 @@
+#DKIM
+milter_protocol = 2
+milter_default_action = accept
+smtpd_milters = inet:localhost:12233
+non_smtpd_milters = inet:localhost:12233

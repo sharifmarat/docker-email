@@ -8,10 +8,11 @@ EXPOSE 25 143 587
 ENV MAILNAME=mydummymailname.com \
     HOSTNAME=mailserver \
     TRUSTED_NETWORKS="127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128" \
-    REPLACE_VARS='$MAILNAME,$HOSTNAME,$TRUSTED_NETWORKS' \
-    DEBIAN_FRONTEND=noninteractive \
+    DKIM_ENABLED=false \
     SERVICE_AVAILABLE_DIR=/etc/service \
     SERVICE_ENABLED_DIR=/service \
+    REPLACE_VARS='$MAILNAME,$HOSTNAME,$TRUSTED_NETWORKS,DKIM_ENABLED,$SERVICE_AVAILABLE_DIR,$SERVICE_ENABLED_DIR' \
+    DEBIAN_FRONTEND=noninteractive \
     CERT_LOCATION=/etc/ssl/private/fullchain.pem \
     CERT_KEY_LOCATION=/etc/ssl/private/privkey.pem
 
@@ -61,6 +62,10 @@ RUN echo $MAILNAME >/etc/mailname \
   && mkdir -p $SERVICE_AVAILABLE_DIR/spamassassin \
   && echo "#!/bin/bash\nexec spamd --max-children 5" >$SERVICE_AVAILABLE_DIR/spamassassin/run \
   && chmod a+x $SERVICE_AVAILABLE_DIR/spamassassin/run \
+# OPENDKIM service (DISABLED BY DEFAULT)
+  && mkdir -p $SERVICE_AVAILABLE_DIR/opendkim \
+  && echo "#!/bin/bash\nexec opendkim -x /etc/opendkim.conf -f" >$SERVICE_AVAILABLE_DIR/opendkim/run \
+  && chmod a+x $SERVICE_AVAILABLE_DIR/opendkim/run \
 # Emable services
   && ln -s $SERVICE_AVAILABLE_DIR/cron $SERVICE_ENABLED_DIR/ \
   && ln -s $SERVICE_AVAILABLE_DIR/rsyslog $SERVICE_ENABLED_DIR/ \
@@ -73,6 +78,7 @@ RUN echo $MAILNAME >/etc/mailname \
 
 # Copy configs - some will be changed later
 COPY src/postfix/main.cf \
+     src/postfix/main.cf-open-dkim \
      src/postfix/master.cf \
      src/postfix/virtual_domains \
      src/postfix/virtual_aliases \
@@ -85,6 +91,7 @@ COPY src/spamassassin/spamassassin \
        /etc/default/
 COPY src/spamassassin/local.cf \
        /etc/spamassassin/
+COPY src/opendkim/opendkim.conf /etc/opendkim.conf
 COPY src/entry.sh /entry.sh
 
 # Start

@@ -1,6 +1,6 @@
 myhostname = $MAILNAME
 myorigin = $MAILNAME
-smtpd_banner = What do you have for $mail_name?
+smtpd_banner = $myhostname is waiting for you
 biff = no
 compatibility_level=2
 append_dot_mydomain = no
