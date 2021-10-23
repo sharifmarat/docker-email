@@ -10,8 +10,8 @@ recipient_delimiter = -
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 
-smtpd_tls_cert_file=/etc/ssl/private/fullchain.pem
-smtpd_tls_key_file=/etc/ssl/private/privkey.pem
+smtpd_tls_cert_file=$CERT_LOCATION
+smtpd_tls_key_file=$CERT_KEY_LOCATION
 smtpd_use_tls=yes
 smtpd_tls_auth_only = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache

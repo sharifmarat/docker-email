@@ -7,6 +7,7 @@ chown dovecot:dovecot /etc/dovecot/users
 
 envsubst $REPLACE_VARS </etc/postfix/main.cf >/tmp/tmp.conf && mv /tmp/tmp.conf /etc/postfix/main.cf
 envsubst $REPLACE_VARS </etc/spamassassin/local.cf >/tmp/tmp.conf && mv /tmp/tmp.conf /etc/spamassassin/local.cf
+envsubst $REPLACE_VARS </etc/dovecot/dovecot.conf >/tmp/tmp.conf && mv /tmp/tmp.conf /etc/dovecot/dovecot.conf
 
 # if opendkim enabled
 if [ "$DKIM_ENABLED" = "true" ]; then
