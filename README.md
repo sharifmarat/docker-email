@@ -139,3 +139,7 @@ docker rmi $(docker ps -a -q --filter ancestor=postfix-dovecot)
 
 ## Trusted networks and docker network config
 *TODO*
+
+
+TODO:
+http://abaton.ib-haakh.de/local_doc/dovecot/wiki/Plugins.MailCrypt.txt

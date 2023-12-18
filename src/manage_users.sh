@@ -28,3 +28,13 @@ echo "Generating crypt password:"
 doveadm pw -s SHA512-CRYPT -p "$pass_new1"
 echo "Update your users file with this"
 
+# TODO TODO TODO
+# Create a new user - automatically it does not work with the password :(
+#doveadm -o plugin/mail_crypt_private_password=desired_password mailbox cryptokey generate -u <USER> -UR
+
+# Create DKIM record
+#sudo opendkim-genkey -b 2048 -d your-domain.com -D /etc/opendkim/keys/your-domain.com -s default -v
+#sudo chown opendkim:opendkim /etc/opendkim/keys/your-domain.com/default.private
+
+# TEST DKIM record
+#opendkim-testkey -d <DOMAIN> -s mail -vvv
